@@ -49,7 +49,7 @@ $$w^{*}_{j} = - \frac{G_{j}}{H_{j} + \lambda}, \quad \text{with} \quad
 G_{j} = \sum_{i \in I_{j}} g_{i}, \quad
 H_{j} = \sum_{i \in I_{j}} h_{i}$$
 
-where $I_{j} = (i|q(x_{i})=j)$ is the set of indices of observations assigned to the $j$-th leaf, $q(\cdot)$ is the learned tree structure that maps an input to its corresponding leaf $j$, where the leaf assignment is determined by the feature vector $x_i$, and $\lambda$ is a regularization term.
+where $I_{j} = \{i\mid q(x_{i})=j\}$ is the set of indices of observations assigned to the $j$-th leaf, $q(\cdot)$ is the learned tree structure that maps an input to its corresponding leaf $j$, where the leaf assignment is determined by the feature vector $x_i$, and $\lambda$ is a regularization term.
 
 For each leaf, the algorithm computes:
 - The sum of gradients $G_j$ for all observations in that leaf
@@ -249,7 +249,7 @@ $$\arg\min_{\mu} \sum_{i=1}^{n} \frac{1}{2}(y_i - \mu(x_i))^2$$
 This is exactly the MSE objective used in LightGBM and XGBoost. Hence, minimizing MSE is equivalent to maximum likelihood estimation under the assumption that:
 - The target follows a normal distribution
 - The variance $\sigma^2$ is constant (homoscedastic) across all feature values
-- We are modeling the mean $\mu(x) = \mathbb{E}[Y|X=x]$ of this normal distribution
+- We are modeling the mean $\mu(x) = \mathbb{E}[Y \mid X=x]$ of this normal distribution
 
 This Gaussian assumption explains why MSE-trained models perform well when the true conditional distribution is approximately normal and has constant variance, but can struggle when:
 - The conditional distribution is heavily skewed or has fat tails
