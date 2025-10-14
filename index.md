@@ -237,32 +237,25 @@ $$f^*(x) = \mathbb{E}[Y|X=x]$$
 
 This is a direct consequence of the fact that minimizing $L_2$ risk leads to the conditional expectation as the optimal predictor. Every tree, via gradient and Hessian statistics, is moving the predictions closer to this conditional mean. As explained earlier, the leaf values are computed using a Newton-Raphson step based on aggregated gradients and Hessians, which for $L_2$ loss results in updates that move predictions toward the mean. It is not simple averaging of target values in the leaves that leads to this outcome, but rather the optimization process driven by the loss function.
 
-### MSE is Equivalent to Assuming a Normal Distribution
-
-Using MSE loss implicitly assumes that the conditional distribution of the target given the features is normal with constant variance. To see why, consider the negative log-likelihood for a normal distribution:
-
-$$-\log p(y|x; \mu, \sigma^2) = \frac{1}{2\sigma^2}(y - \mu(x))^2 + \frac{1}{2}\log(2\pi\sigma^2)$$
-
-When we minimize this over a dataset with respect to $\mu(x)$, the constant terms do not affect the optimization, leaving us with:
-
-$$\arg\min_{\mu} \sum_{i=1}^{n} \frac{1}{2}(y_i - \mu(x_i))^2$$
-
-This is exactly the MSE objective used in LightGBM and XGBoost. Hence, minimizing MSE is equivalent to maximum likelihood estimation under the assumption that:
-- The target follows a normal distribution
-- The variance $\sigma^2$ is constant (homoscedastic) across all feature values
-- We are modeling the mean $\mu(x) = \mathbb{E}[Y \mid X=x]$ of this normal distribution
-
-This Gaussian assumption explains why MSE-trained models perform well when the true conditional distribution is approximately normal and has constant variance, but can struggle when:
-- The conditional distribution is heavily skewed or has fat tails
-- The variance changes with the features (heteroscedasticity)
-- The distribution is multimodal or has other non-Gaussian characteristics
-
 ### Implications for the Distribution
 
 - **Center of the distribution:** Since the conditional mean is the objective, GBDTs with $L_2$ loss tend to capture the center of the distribution well. Predictions will be accurate for the "average" case.
 - **Lower tail:** Extreme low values (outcomes far below the mean) are not directly targeted. As a result, lower-tail observations are often over-forecasted (predicted too high).
 - **Upper tail:** Similarly, the model will usually under-forecast such values (predicted too low).
 
+
+
+### MSE and the Gaussian Likelihood Connection
+
+Assuming that the conditional distribution of the target is Gaussian with constant variance, minimizing MSE is equivalent to performing maximum likelihood estimation under that model. To see why, consider the negative log-likelihood for a normal distribution:
+
+$$-\log p(y|x; \mu, \sigma^2) = \frac{1}{2\sigma^2}(y - \mu(x))^2 + \frac{1}{2}\log(2\pi\sigma^2)$$
+
+When we minimize this expression over a dataset with respect to $\mu(x)$, the constant terms do not affect the optimization, leaving us with:
+
+$$\arg\min_{\mu} \sum_{i=1}^{n} \frac{1}{2}(y_i - \mu(x_i))^2$$
+
+This is exactly the MSE objective used in LightGBM and XGBoost. 
 
 <!---
 ### Simple Example: Regression to the Mean
