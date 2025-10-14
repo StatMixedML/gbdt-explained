@@ -125,9 +125,9 @@ This is a direct consequence of the fact that minimizing $L_2$ risk leads to the
 
 #### Implications for the Distribution
 
-- **Center of the distribution:** GBDTs with $L_2$ loss capture the center of the conditional distribution well, yielding accurate predictions for the 'average' case.
-- **Lower tail:** Extreme low outcomes are often over-forecasted (predicted too high).
-- **Upper tail:** Conversely, high outcomes tend to be under-forecasted (predicted too low).
+- Center of the distribution: GBDTs with $L_2$ loss capture the center of the conditional distribution well, yielding accurate predictions for the 'average' case.
+- Lower tail: Extreme low outcomes are often over-forecasted (predicted too high).
+- Upper tail: Conversely, high outcomes tend to be under-forecasted (predicted too low).
 
 #### MSE and the Gaussian Likelihood Connection
 
