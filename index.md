@@ -595,9 +595,9 @@ This proves the complete chain:
 
 We have empirically verified that:
 
-1. ✅ LightGBM leaf weights follow: $w_j = (-G_j / (H_j + \lambda))$
-2. ✅ Predictions are computed as: $\hat{y}_i = w_{q(x_i)}$
-3. ✅ This is a Newton-Raphson update
+1. ✅ GBDTs leaf weights follow: $$w_j = (-G_j / (H_j + \lambda))$$
+2. ✅ Predictions are computed as: $$\hat{y}_i = w_{q(x_i)}$$
+3. ✅ GBDTs use Newton-Raphson updates based on aggregated gradients and Hessians, not simple averaging of target values
 4. ✅ GBDTs are gradient-based function optimizers that use tree structures to represent the function
 
 ## Key Takeaways
