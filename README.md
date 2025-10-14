@@ -4,9 +4,7 @@ An educational deep-dive into how modern GBDTs (XGBoost, LightGBM) actually work
 
 ## Read the Article
 
-**[Click here to read the full article with properly rendered equations](https://maerzale.github.io/gbdt-explained/)**
-
-Replace `maerzale` with your GitHub username in the URL above once you've pushed to GitHub.
+**[Click here to read the full article with properly rendered equations](https://StatMixedML.github.io/gbdt-explained/)**
 
 ## What's Covered
 
