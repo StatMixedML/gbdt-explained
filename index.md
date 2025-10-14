@@ -595,7 +595,7 @@ This proves the complete chain:
 
 We have empirically verified that:
 
-1. ✅ LightGBM leaf weights follow: $w_j = \eta \cdot (-G_j / (H_j + \lambda))$
+1. ✅ LightGBM leaf weights follow: $w_j = (-G_j / (H_j + \lambda))$
 2. ✅ Predictions are computed as: $\hat{y}_i = w_{j(x_i)}$
 3. ✅ This is a Newton-Raphson update
 4. ✅ GBDTs are gradient-based function optimizers that use tree structures to represent the function
@@ -613,11 +613,11 @@ We have empirically verified that:
 
 ## References
 
- **Friedman, J. H.** (1999). Greedy function approximation: A gradient boosting machine. *Annals of Statistics*, 29(5), 1189-1232.
+**Friedman, J. H.** (1999). Greedy function approximation: A gradient boosting machine. *Annals of Statistics*, 29(5), 1189-1232.
   [[Paper]](https://projecteuclid.org/journals/annals-of-statistics/volume-29/issue-5/Greedy-function-approximation-A-gradient-boostingmachine/10.1214/aos/1013203451.full)
 
-  **Chen, T., & Guestrin, C.** (2016). XGBoost: A scalable tree boosting system. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785-794. [[Paper]](https://dl.acm.org/doi/10.1145/2939672.2939785)
-  [[Docs]](https://xgboost.readthedocs.io/)
+**Chen, T., & Guestrin, C.** (2016). XGBoost: A scalable tree boosting system. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785-794. [[Paper]](https://dl.acm.org/doi/10.1145/2939672.2939785)
+[[Docs]](https://xgboost.readthedocs.io/)
 
-  **Ke, G., et al.** (2017). LightGBM: A highly efficient gradient boosting decision tree. *Advances in Neural Information Processing Systems*, 30, 3146-3154. [[Paper]](https://papers.nips.cc/paper/6907-lightgbm-a-highly-efficient-gradient-boosting-decision-tree)
-  [[Docs]](https://lightgbm.readthedocs.io/)
+**Ke, G., et al.** (2017). LightGBM: A highly efficient gradient boosting decision tree. *Advances in Neural Information Processing Systems*, 30, 3146-3154. [[Paper]](https://papers.nips.cc/paper/6907-lightgbm-a-highly-efficient-gradient-boosting-decision-tree)
+[[Docs]](https://lightgbm.readthedocs.io/)
