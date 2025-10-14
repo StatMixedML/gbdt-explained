@@ -294,9 +294,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 ### Training a Simple Model
 
 We train a model with:
-- **1 tree** (to make verification easier)
-- **boost_from_average=False** (so initial predictions are 0)
-- **learning_rate=0.3** and **lambda_l2=0.5** (to test the full formula)
+- 1 tree (to make verification easier)
+- boost_from_average=False (so initial predictions are 0)
+- learning_rate=0.3 and lambda_l2=0.5 (to test the full formula)
 
 ```python
 np.random.seed(seed)
