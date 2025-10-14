@@ -49,7 +49,7 @@ $$w^{*}_{j} = - \frac{G_{j}}{H_{j} + \lambda}, \quad \text{with} \quad
 G_{j} = \sum_{i \in I_{j}} g_{i}, \quad
 H_{j} = \sum_{i \in I_{j}} h_{i}$$
 
-where $I_{j} = \{ \, i \mid q(x_{i})=j \, \}$ is the set of indices of observations assigned to the $j$-th leaf, $q(\cdot)$ is the learned tree structure that maps an input to its corresponding leaf $j$, where the leaf assignment is determined by the feature vector $x_i$, and $\lambda$ is a regularization term.
+where $I_{j} = \lbrace i \mid q(x_{i})=j \rbrace$ is the set of indices of observations assigned to the $j$-th leaf, $q(\cdot)$ is the learned tree structure that maps an input to its corresponding leaf $j$, where the leaf assignment is determined by the feature vector $x_i$, and $\lambda$ is a regularization term.
 
 For each leaf, the algorithm computes:
 - The sum of gradients $G_j$ for all observations in that leaf
