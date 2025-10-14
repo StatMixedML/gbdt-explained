@@ -76,8 +76,6 @@ Conventional GBDTs operate in function space, mapping input features $x$ to outp
 
 $$\hat{\psi}^{(m)}(x_i) = \hat{\psi}^{(m-1)}(x_i) + \hat{\delta}^{(m)}(x_i), \quad \text{where} \quad \hat{\delta}^{(m)}(x_i) = \eta \cdot w^{*}_{j(i)}$$
 
-For the specific case of MSE loss, the gradient is proportional to the residuals, and the Hessian is constant. This can lead to the impression that GBDTs simply fit residuals, when in fact they always follow gradient-based updates derived from the specified loss function.
-
 where:
 - $\hat{\psi}^{(m)}$ denotes the output after $m=1, \ldots, M$ iterations
 - $\hat{\delta}^{(m)}$ is the incremental update at iteration $m$
@@ -93,7 +91,10 @@ GBDTs build trees sequentially. At each iteration:
 3. Assign leaf values using the Newton-Raphson formula
 4. Add this tree's predictions (scaled by learning rate) to the ensemble
 
-This iterative process, guided entirely by gradients and Hessians rather than target averaging, enables GBDTs to incrementally refine predictions and achieve state-of-the-art performance across diverse machine learning tasks.
+This iterative process, guided entirely by gradients and Hessians rather than target averaging, enables GBDTs to incrementally refine predictions and achieve state-of-the-art performance across diverse machine learning tasks. 
+
+For the specific case of MSE loss, the gradient is proportional to the residuals, and the Hessian is constant. This can lead to the impression that GBDTs simply fit residuals, when in fact they always follow gradient-based updates derived from the specified loss function.
+
 
 <!---
 ## Newton-Raphson Interpretation
