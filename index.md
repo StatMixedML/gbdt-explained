@@ -494,7 +494,7 @@ Now we verify that predictions from `model.predict()` exactly match what we get 
 1. Finding which leaf each sample falls into
 2. Looking up that leaf's weight
 
-This proves: $\hat{y}_i = w_{j(x_i)}$ where $j(x_i)$ is the leaf assignment for sample $i$.
+This proves: $$\hat{y}_i = w_{q(x_i)}$$ where $$q(x_i)$$ is the leaf assignment for sample $i$.
 
 ```python
 # Get predictions from LightGBM
