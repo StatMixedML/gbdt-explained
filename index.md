@@ -611,7 +611,7 @@ We have empirically verified that:
 - The flexibility of the gradient boosting framework - its ability to work with any twice differentiable loss function - makes it straightforward to adapt GBDTs to specialized requirements by simply changing the loss function and computing the corresponding gradients and Hessians.
 
 
- ## References
+## References
 
  **Friedman, J. H.** (1999). Greedy function approximation: A gradient boosting machine. *Annals of Statistics*, 29(5), 1189-1232.
   [[Paper]](https://projecteuclid.org/journals/annals-of-statistics/volume-29/issue-5/Greedy-function-approximation-A-gradient-boostingmachine/10.1214/aos/1013203451.full)
