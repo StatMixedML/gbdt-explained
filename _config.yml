@@ -1,0 +1,12 @@
+# Theme
+theme: jekyll-theme-minimal
+
+# Site settings
+title: "Understanding GBDTs"
+description: "An overview of how modern GBDTs (XGBoost, LightGBM) work"
+
+# Enable MathJax
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge
