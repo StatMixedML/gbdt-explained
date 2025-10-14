@@ -1,10 +1,10 @@
 # Understanding GBDTs
 
-An educational deep-dive into how modern GBDTs (XGBoost, LightGBM) actually work.
+A short overview of how modern GBDTs (XGBoost, LightGBM) work.
 
 ## Read the Article
 
-**[Click here to read the full article with properly rendered equations](https://StatMixedML.github.io/gbdt-explained/)**
+**[Click here to read the article 'Understanding How Gradient Boosted Decision Trees Work'](https://StatMixedML.github.io/gbdt-explained/)**
 
 ## What's Covered
 
@@ -13,12 +13,6 @@ An educational deep-dive into how modern GBDTs (XGBoost, LightGBM) actually work
 - Worked regression example with step-by-step calculations
 - Empirical verification with LightGBM
 - What GBDTs estimate under L2 loss
-
-## Repository Contents
-
-- `index.md` - Main article source
-- `_config.yml` - Jekyll configuration
-- `_layouts/default.html` - Custom layout with MathJax support
 
 ## Contributing
 
