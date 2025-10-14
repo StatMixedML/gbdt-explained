@@ -6,13 +6,11 @@ A short overview of how modern GBDTs (XGBoost, LightGBM) work.
 
 **[Click here to read the article 'Understanding How Gradient Boosted Decision Trees Work'](https://StatMixedML.github.io/gbdt-explained/)**
 
-## What's Covered
+ ## Code Examples
 
-- The gradient-based nature of GBDTs
-- How gradients and Hessians guide both splitting and leaf value assignment
-- Worked regression example with step-by-step calculations
-- Empirical verification with LightGBM
-- What GBDTs estimate under L2 loss
+  The empirical verification code from the article is available as a Jupyter notebook:
+  - [View on GitHub](https://github.com/StatMixedML/gbdt-explained/blob/main/notebooks/gbdt_verification.ipynb)
+  - [Open in Colab](https://colab.research.google.com/github/StatMixedML/gbdt-explained/blob/main/notebooks/gbdt_verification.ipynb)
 
 ## Contributing
 
