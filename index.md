@@ -7,8 +7,7 @@ title: "Understanding How Gradient Boosted Decision Trees Work"
 
 ## Introduction
 
-Gradient Boosted Decision Trees (GBDTs) like XGBoost and LightGBM are powerful machine learning models that achieve state-of-the-art performance on many tabular datasets. However, there is a common misconception that GBDTs work by simply averaging observations in their leaf nodes. This document explains the underlying mechanism: GBDTs use gradient and Hessian information to optimize a loss function through a Newton-Raphson-style update procedure.
-
+Gradient Boosted Decision Trees (GBDTs) like XGBoost and LightGBM achieve state-of-the-art performance on many tabular datasets. While they partition the feature space and assign constant predictions per region, their leaf values are not simple averages. Instead, GBDTs compute optimal updates using gradient and Hessian information to minimize a loss function via a Newton–Raphson-style procedure.
 ## The Gradient-Based Nature of GBDTs
 
 Modern GBDT implementations such as LightGBM and XGBoost rely on gradients $g_{i}$ and Hessians $h_{i}$, where
@@ -29,7 +28,7 @@ Think of gradients as directional signals telling us how to reduce the error. If
 - **Gradients** $g_i$ represent how much and in which direction we need to adjust our current prediction for each observation
 - **Hessians** $h_i$ capture the rate of change of these gradients, providing information about the reliability and stability of our adjustments
 
-## The Dual Role of Gradients and Hessians
+## How Gradients and Hessians Drive Tree Construction and Leaf Values
 
 Among others, gradients and Hessians serve two crucial functions in each boosting iteration: they guide the tree construction via split decisions and determine the optimal values assigned to leaf nodes.
 
@@ -41,7 +40,7 @@ $$\mathcal{L}_{split} \propto \frac{(\sum_{i\in I_L} g_i)^2}{\sum_{i\in I_L} h_i
 
 where $I_L$ and $I_R$ denote the instance sets of left and right nodes after a candidate split respectively, and $I = I_L \cup I_R$ represents their union. This is fundamentally different from traditional trees that might split based on variance reduction or Gini impurity.
 
-### 2. Leaf Value Assignment: Newton-Raphson Updates
+### 2. Leaf Value Calculation: Newton-Raphson Updates
 
 Once a tree structure is determined, the optimal value for each leaf is calculated using what is essentially a Newton-Raphson step:
 
@@ -83,7 +82,7 @@ where:
 - $w^{*}_{j(i)}$ is the weight assigned to the leaf $j(i)$ corresponding to observation $i$
 - The leaf assignment is determined by the feature vector $x_i$ through the structure of the learned tree, i.e., $j(i) = q(x_i)$
 
-The leaf weights approximate a Newton-Raphson update, where $w^{*}_{j} = -\frac{G_j}{H_j + \lambda}$ aggregates individual gradients and Hessians across all observations in leaf $j$. This second-order approximation makes GBDTs highly adaptive for a wide range of tasks, allowing $\hat{\psi}$ to represent any quantity as long as the associated loss function is twice-continuously differentiable.
+The leaf weights approximate a Newton-Raphson update, where $w^{*}_{j} = -\frac{G_j}{H_j + \lambda}$ aggregates individual gradients and Hessians across all observations in leaf $j$. This second-order approximation makes GBDTs highly adaptive for a wide range of tasks, allowing $\hat{\psi}$ to represent any quantity as long as the associated loss function is twice-continuously differentiable. Note that while most GBDT objectives assume a twice-differentiable loss, variants exist that use only first-order gradients when Hessians are undefined (e.g., Quantile-Loss).
 
 GBDTs build trees sequentially. At each iteration:
 1. Compute gradients and Hessians based on current predictions
@@ -91,10 +90,60 @@ GBDTs build trees sequentially. At each iteration:
 3. Assign leaf values using the Newton-Raphson formula
 4. Add this tree's predictions (scaled by learning rate) to the ensemble
 
-This iterative process, guided entirely by gradients and Hessians rather than target averaging, enables GBDTs to incrementally refine predictions and achieve state-of-the-art performance across diverse machine learning tasks. 
+This iterative process, guided entirely by gradients and Hessians rather than target averaging, enables GBDTs to incrementally refine predictions and achieve state-of-the-art performance across diverse machine learning tasks. For the specific case of MSE loss, the gradient is proportional to the residuals, and the Hessian is constant. This can lead to the impression that GBDTs simply fit residuals, when in fact they always follow gradient-based updates derived from the specified loss function. Having understood how gradients and Hessians guide optimization, we can now ask a crucial question: what exactly does this optimization make the model learn? The answer lies in the choice of the loss function.
 
-For the specific case of MSE loss, the gradient is proportional to the residuals, and the Hessian is constant. This can lead to the impression that GBDTs simply fit residuals, when in fact they always follow gradient-based updates derived from the specified loss function.
+## The Loss Function Determines What The Model Learns
 
+The choice of loss function fundamentally determines what the GBDT will estimate.
+This is not merely about how errors are measured - it defines the optimization itself.
+Through the gradient-based updates described above, GBDTs’ predictions converge toward the function that minimizes the expected loss:
+
+$$
+f^*(x) = \arg\min_{f} \, \mathbb{E}\big[\mathcal{L}(Y, f(X))\big].
+$$
+
+Different loss functions have different theoretical minimizers, so they lead to estimates of different conditional quantities.
+In other words, by changing the loss, you change what the model learns.
+
+| **Loss Function**      | **Estimated Quantity**        | **Interpretation**                            |
+| ---------------------- | ----------------------------- | --------------------------------------------- |
+| $L_2$ (MSE)            | $\mathbb{E}[Y \mid X=x]$      | Conditional mean                              |
+| $L_1$ (MAE)            | $\mathrm{median}(Y \mid X=x)$ | Conditional median                            |
+| Quantile loss ($\tau$) | $Q_\tau(Y \mid X=x)$          | Conditional quantile (e.g., 0.1, 0.9)         |
+| Log-loss               | $P(Y=1 \mid X=x)$             | Class probability (for binary classification) |
+
+This explains why GBDT architectures can be adapted to such diverse tasks as regression, quantile estimation, and classification.
+By merely changing the loss function - and consequently the gradients and Hessians - we redefine what the model’s leaf values represent and what target it approximates. 
+
+### What Do GBDTs Estimate Under $L_2$ Loss?
+
+When using the squared error (MSE or more generally $L_2$ loss), GBDTs are effectively trained to approximate the conditional mean of the target variable given features:
+
+$$f^*(x) = \mathbb{E}[Y|X=x]$$
+
+This is a direct consequence of the fact that minimizing $L_2$ risk leads to the conditional expectation as the optimal predictor. Every tree, via gradient and Hessian statistics, is moving the predictions closer to this conditional mean. As explained earlier, the leaf values are computed using a Newton-Raphson step based on aggregated gradients and Hessians, which for $L_2$ loss results in updates that move predictions toward the mean. It is not simple averaging of target values in the leaves that leads to this outcome, but rather the optimization process driven by the loss function.
+
+#### Implications for the Distribution
+
+- **Center of the distribution:** GBDTs with $L_2$ loss capture the center of the conditional distribution well, yielding accurate predictions for the 'average' case.
+- **Lower tail:** Extreme low outcomes are often over-forecasted (predicted too high).
+- **Upper tail:** Conversely, high outcomes tend to be under-forecasted (predicted too low).
+
+#### MSE and the Gaussian Likelihood Connection
+
+Assuming that the conditional distribution of the target is Gaussian with constant variance, minimizing MSE is equivalent to performing maximum likelihood estimation under that model. To see why, consider the negative log-likelihood for a normal distribution:
+
+$$-\log p(y|x; \mu, \sigma^2) = \frac{1}{2\sigma^2}(y - \mu(x))^2 + \frac{1}{2}\log(2\pi\sigma^2)$$
+
+When we minimize this expression over a dataset with respect to $\mu(x)$, the constant terms do not affect the optimization, leaving us with:
+
+$$\arg\min_{\mu} \sum_{i=1}^{n} \frac{1}{2}(y_i - \mu(x_i))^2$$
+
+This is exactly the MSE objective used in LightGBM and XGBoost. 
+
+### Beyond Point Estimates: Distributional Boosting
+
+While the $L_2$ loss focuses on the conditional mean, distributional gradient boosting methods such as [LightGBMLSS](https://github.com/StatMixedML/LightGBMLSS) and [XGBoostLSS](https://github.com/StatMixedML/XGBoostLSS) extend the classical GBDT framework from point estimation to full probabilistic modeling. Instead of minimizing a loss with respect to a single target value (mean, median, or quantile), they minimize the negative log-likelihood of a specified probability distribution. This probabilistic extension preserves the same gradient–Hessian optimization mechanism but replaces point-wise losses with distribution-based likelihoods.
 
 <!---
 ## Newton-Raphson Interpretation
@@ -220,69 +269,10 @@ For the chosen split:
 
 Even with squared error loss, the algorithm's choices and leaf values arise from gradient and Hessian statistics, not direct averaging. The often-stated "fit the residuals" description holds only because the negative gradient under MSE is proportional to the residual. For general losses, GBDTs fit the *negative gradient*, not necessarily $y-\hat{\psi}$. Note how the initialization value (0.5 in LightGBM's case) affects all subsequent gradient calculations and ultimately the leaf values, demonstrating that the entire process is driven by optimization rather than simple statistics.
 
-## The Power of This Approach
-
-This gradient-based framework provides remarkable flexibility:
-
-1. **Loss Function Agnostic**: GBDTs can optimize any differentiable loss function - from $L_2$ to custom loss functions - as long as you can calculate gradients and Hessians.
-
-2. **Natural Handling of Different Distributions**: For different loss functions, the leaf values automatically adapt. While squared error loss yields mean values (because the gradients and Hessians of squared error lead to this), other losses produce different statistics - quantiles for quantile loss, log-odds for logistic loss, and so on.
-
-
-## What Do GBDTs Estimate Under $L_2$ Loss?
-
-When using the squared error (MSE or more generally $L_2$ loss), GBDTs are effectively trained to approximate the conditional mean of the target variable given features:
-
-$$f^*(x) = \mathbb{E}[Y|X=x]$$
-
-This is a direct consequence of the fact that minimizing $L_2$ risk leads to the conditional expectation as the optimal predictor. Every tree, via gradient and Hessian statistics, is moving the predictions closer to this conditional mean. As explained earlier, the leaf values are computed using a Newton-Raphson step based on aggregated gradients and Hessians, which for $L_2$ loss results in updates that move predictions toward the mean. It is not simple averaging of target values in the leaves that leads to this outcome, but rather the optimization process driven by the loss function.
-
-### Implications for the Distribution
-
-- **Center of the distribution:** Since the conditional mean is the objective, GBDTs with $L_2$ loss tend to capture the center of the distribution well. Predictions will be accurate for the "average" case.
-- **Lower tail:** Extreme low values (outcomes far below the mean) are not directly targeted. As a result, lower-tail observations are often over-forecasted (predicted too high).
-- **Upper tail:** Similarly, the model will usually under-forecast such values (predicted too low).
-
-
-
-### MSE and the Gaussian Likelihood Connection
-
-Assuming that the conditional distribution of the target is Gaussian with constant variance, minimizing MSE is equivalent to performing maximum likelihood estimation under that model. To see why, consider the negative log-likelihood for a normal distribution:
-
-$$-\log p(y|x; \mu, \sigma^2) = \frac{1}{2\sigma^2}(y - \mu(x))^2 + \frac{1}{2}\log(2\pi\sigma^2)$$
-
-When we minimize this expression over a dataset with respect to $\mu(x)$, the constant terms do not affect the optimization, leaving us with:
-
-$$\arg\min_{\mu} \sum_{i=1}^{n} \frac{1}{2}(y_i - \mu(x_i))^2$$
-
-This is exactly the MSE objective used in LightGBM and XGBoost. 
-
-<!---
-### Simple Example: Regression to the Mean
-
-Consider the following toy dataset of true values and GBDT predictions under $L_2$ loss:
-
-| Observation | True Value      | Predicted ($L_2$) |
-|-------------|-----------------|-------------------|
-| 1           | 5 (low tail)    | 8 (too high)      |
-| 2           | 10 (near mean)  | 9 (close)         |
-| 3           | 15 (near mean)  | 14 (close)        |
-| 4           | 25 (high tail)  | 18 (too low)      |
-
-In this example, predictions are "shrunk" toward the center: the lower-tail case (5) is overestimated (8), while the upper-tail case (25) is underestimated (18). This illustrates the inherent regression-to-the-mean behavior of $L_2$-trained models.
-
-### Alternatives for Tail Estimation
-
-If the tails are of particular interest, $L_2$ loss is suboptimal. Alternatives include:
-- **Quantile loss:** Directly estimates conditional quantiles, improving fit for lower or upper tails.
-- **Distributional models:** Estimate entire conditional distributions, allowing uncertainty and tail behavior to be modeled explicitly.
-- **Extreme value theory-based models:** Useful when focusing specifically on rare, high-impact tail events.
---->
-
 
 ## Empirical Verification with LightGBM
 
-To verify that LightGBM indeed uses the above formulas, we train a simple model and compare the actual leaf weights to those computed using the formulas.
+To verify that LightGBM indeed uses the above formulas, we train a simple model and compare the actual leaf weights and predictions of the model to those computed using the above formulas.
 
 ### Setup
 
