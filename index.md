@@ -145,27 +145,6 @@ This is exactly the MSE objective used in LightGBM and XGBoost.
 
 While the $L_2$ loss focuses on the conditional mean, distributional gradient boosting methods such as [LightGBMLSS](https://github.com/StatMixedML/LightGBMLSS) and [XGBoostLSS](https://github.com/StatMixedML/XGBoostLSS) extend the classical GBDT framework from point estimation to full probabilistic modeling. Instead of minimizing a loss with respect to a single target value (mean, median, or quantile), they minimize the negative log-likelihood of a specified probability distribution. This probabilistic extension preserves the same gradient–Hessian optimization mechanism but replaces point-wise losses with distribution-based likelihoods.
 
-<!---
-## Newton-Raphson Interpretation
-
-The leaf weight formula comes from a second-order Taylor approximation:
-
-$$\mathcal{L}(F + \delta) \approx \mathcal{L}(F) + g^T \delta + \frac{1}{2} \delta^T H \delta$$
-
-Minimizing with respect to $\delta$ gives: $\delta^* = -H^{-1}g$
-
-For constant $\delta = w_j$ in leaf $j$:
-
-$$w_j = -\frac{G_j}{H_j} \approx -\frac{\text{gradient}}{\text{curvature}}$$
-
-With regularization and learning rate:
-
-$$w_j = \eta \cdot \left(-\frac{G_j}{H_j + \lambda}\right)$$
-
-Note: In many implementations, the learning rate $\eta$ is applied during the prediction update step rather than being baked into the leaf weights themselves.
---->
-
-
 ## A Worked Regression Example
 
 This example demonstrates, step by step, how a modern GBDT (e.g., LightGBM/XGBoost) uses gradients and Hessians to choose splits and compute leaf values. It clarifies two common misconceptions: (i) leaf values are not simple averages of targets, and (ii) the model fits the negative gradient of the loss (pseudo-residuals), not the raw residuals for arbitrary losses.
