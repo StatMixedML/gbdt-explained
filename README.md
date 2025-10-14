@@ -15,7 +15,3 @@ A short overview of how modern GBDTs (XGBoost, LightGBM) work.
 ## Contributing
 
 Found an error or have suggestions? Please open an issue!
-
-## License
-
-MIT License
