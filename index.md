@@ -147,7 +147,7 @@ While the $L_2$ loss focuses on the conditional mean, distributional gradient bo
 
 ## A Worked Regression Example
 
-This example demonstrates, step by step, how a modern GBDT (e.g., LightGBM/XGBoost) uses gradients and Hessians to choose splits and compute leaf values. It clarifies two common misconceptions: (i) leaf values are not simple averages of targets, and (ii) the model fits the negative gradient of the loss (pseudo-residuals), not the raw residuals for arbitrary losses.
+This example demonstrates, step by step, how a modern GBDT (e.g., LightGBM/XGBoost) uses gradients and Hessians to choose splits and compute leaf values. It clarifies two common misconceptions: (i) leaf values are not simple averages of targets, and (ii) the model fits the negative gradient of the loss (pseudo-residuals), not the raw residuals.
 
 ### Data and Initialization
 
@@ -244,9 +244,15 @@ For the chosen split:
 | 4  | 15    | blue   | Right | +0.30          | 0.80               |
 | 5  | 9     | red    | Left  | +1.35          | 1.85               |
 
-### Key Takeaway
+## Key Takeaways
 
-Even with squared error loss, the algorithm's choices and leaf values arise from gradient and Hessian statistics, not direct averaging. The often-stated "fit the residuals" description holds only because the negative gradient under MSE is proportional to the residual. For general losses, GBDTs fit the *negative gradient*, not necessarily $y-\hat{\psi}$. Note how the initialization value (0.5 in LightGBM's case) affects all subsequent gradient calculations and ultimately the leaf values, demonstrating that the entire process is driven by optimization rather than simple statistics.
+- Modern GBDTs use gradient and Hessian information to both construct trees and assign leaf values. The values in leaf nodes are not averages of observations - they are optimization steps designed to reduce the loss function.
+
+- Understanding this distinction is crucial. While simple averaging is approximated for squared error loss (and only because the gradient and Hessian lead to this), the mechanism is fundamentally different: GBDTs arrive at predictions through gradient optimization, not simple averaging.
+
+- Under $L_2$ loss, any model learns the conditional mean. This ensures strong performance around the center of the target distribution, but systematically over-forecasts the lower tail and under-forecasts the upper tail. For applications where tails matter (risk forecasting, extreme demand spikes, etc.), alternative losses or distributional modeling approaches are necessary.
+
+- The flexibility of the gradient boosting framework - its ability to work with any twice differentiable loss function - makes it straightforward to adapt GBDTs to specialized requirements by simply changing the loss function and computing the corresponding gradients and Hessians.
 
 
 ## Empirical Verification with LightGBM
@@ -562,17 +568,6 @@ We have empirically verified that:
 2. ✅ Predictions are computed as: $$\hat{y}_i = w_{q(x_i)}$$
 3. ✅ GBDTs use Newton-Raphson updates based on aggregated gradients and Hessians, not simple averaging of target values
 4. ✅ GBDTs are gradient-based function optimizers that use tree structures to represent the function
-
-## Key Takeaways
-
-- Modern GBDTs use gradient and Hessian information to both construct trees and assign leaf values. The values in leaf nodes are not averages of observations - they are optimization steps designed to reduce the loss function.
-
-- Understanding this distinction is crucial. While simple averaging is approximated for squared error loss (and only because the gradient and Hessian lead to this), the mechanism is fundamentally different: GBDTs arrive at predictions through gradient optimization, not simple averaging.
-
-- Under $L_2$ loss, any model learns the conditional mean. This ensures strong performance around the center of the target distribution, but systematically over-forecasts the lower tail and under-forecasts the upper tail. For applications where tails matter (risk forecasting, extreme demand spikes, etc.), alternative losses or distributional modeling approaches are necessary.
-
-- The flexibility of the gradient boosting framework - its ability to work with any twice differentiable loss function - makes it straightforward to adapt GBDTs to specialized requirements by simply changing the loss function and computing the corresponding gradients and Hessians.
-
 
 ## References
 
