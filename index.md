@@ -147,11 +147,11 @@ While the $L_2$ loss focuses on the conditional mean, distributional gradient bo
 
 ## A Worked Regression Example
 
-This example demonstrates, step by step, how a modern GBDT (e.g., LightGBM/XGBoost) uses gradients and Hessians to choose splits and compute leaf values. It clarifies two common misconceptions: (i) leaf values are not simple averages of targets, and (ii) the model fits the negative gradient of the loss (pseudo-residuals), not the raw residuals.
+This example demonstrates, step by step, how a modern GBDT (e.g., LightGBM/XGBoost) uses gradients and Hessians to choose splits and compute leaf values. It clarifies two common misconceptions: (i) leaf values are not simple averages of targets, and (ii) the model performs gradient-based optimization using the loss function's derivatives, not residual-fitting (a misleading simplification specific to MSE).
 
 ### Data and Initialization
 
-We use five observations with features price, colour and target sales. We initialize predictions with 0.5, which is the default initialization value in LightGBM.
+We use five observations with features (price, colour) and sales as the target. We initialize predictions with 0.5 for simplicity.
 
 | id | price | colour | sales $y_i$ |
 |----|-------|--------|-------------|
@@ -195,7 +195,7 @@ The split gain used by modern GBDTs is:
 
 $$\text{Gain} = \frac{\big(\sum_{i\in I_L} g_i\big)^2}{\sum_{i\in I_L} h_i + \lambda} + \frac{\big(\sum_{i\in I_R} g_i\big)^2}{\sum_{i\in I_R} h_i + \lambda} - \frac{\big(\sum_{i\in I} g_i\big)^2}{\sum_{i\in I} h_i + \lambda}$$
 
-We set $\lambda=0$ for clarity.
+We set $\lambda=0$ for simplicity.
 
 #### Candidate A: Split on $\text{price} < 10$
 
